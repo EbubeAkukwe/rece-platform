@@ -31,6 +31,7 @@ export default async function AgentListingsPage() {
       role="agent"
       userName={profile.full_name}
       userEmail={profile.email}
+ userId={user.id}
     >
       <div className="space-y-6">
         <div className="flex items-center justify-between">

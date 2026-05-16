@@ -45,6 +45,7 @@ export default async function AgentListingDetailPage({
       role="agent"
       userName={profile.full_name}
       userEmail={profile.email}
+ userId={user.id}
     >
       <div className="space-y-6 max-w-4xl">
         {/* Header */}

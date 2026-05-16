@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DashboardShell } from '@/components/layout/dashboard-shell'
 import { StatCard } from '@/components/shared/stat-card'
-import { Heart, ClipboardList, Search, Bell } from 'lucide-react'
+import { Heart, ClipboardList, Bell, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
@@ -22,22 +22,24 @@ export default async function BuyerDashboardPage() {
     redirect(`/dashboard/${profile.role}`)
   }
 
-  // Fetch counts
-  const [{ count: savedCount }, { count: leadsCount }, { count: notifCount }] =
-    await Promise.all([
-      supabase.from('saved_properties').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-      supabase.from('leads').select('*', { count: 'exact', head: true }).eq('prospect_id', user.id),
-      supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('read', false),
-    ])
+  const [
+    { count: savedCount },
+    { count: leadsCount },
+    { count: notifCount },
+  ] = await Promise.all([
+    supabase.from('saved_properties').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+    supabase.from('leads').select('*', { count: 'exact', head: true }).eq('prospect_id', user.id),
+    supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('read', false),
+  ])
 
   return (
     <DashboardShell
       role={profile.role}
       userName={profile.full_name}
       userEmail={profile.email}
+      userId={user.id}
     >
       <div className="space-y-8">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
@@ -55,7 +57,6 @@ export default async function BuyerDashboardPage() {
           </Button>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatCard
             title="Saved Properties"
@@ -77,7 +78,6 @@ export default async function BuyerDashboardPage() {
           />
         </div>
 
-        {/* Onboarding prompt if not completed */}
         {!profile.onboarding_completed && (
           <div className="bg-foreground text-background rounded-xl p-6 flex items-center justify-between gap-4">
             <div className="space-y-1">
@@ -96,7 +96,6 @@ export default async function BuyerDashboardPage() {
           </div>
         )}
 
-        {/* Empty state */}
         <div className="bg-background border rounded-xl p-12 text-center space-y-4">
           <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto">
             <Search className="w-5 h-5 text-muted-foreground" />

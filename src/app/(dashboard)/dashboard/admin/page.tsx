@@ -36,16 +36,8 @@ export default async function AdminDashboardPage() {
     supabase.from('leads').select('*', { count: 'exact', head: true }),
     supabase.from('leads').select('*', { count: 'exact', head: true }).eq('status', 'new'),
     supabase.from('commissions').select('commission_amount, status'),
-    supabase
-      .from('leads')
-      .select('id, status, created_at, profiles!leads_prospect_id_fkey(full_name, email)')
-      .order('created_at', { ascending: false })
-      .limit(5),
-    supabase
-      .from('profiles')
-      .select('id, full_name, email, role, created_at')
-      .order('created_at', { ascending: false })
-      .limit(5),
+    supabase.from('leads').select('id, status, created_at, profiles!leads_prospect_id_fkey(full_name, email)').order('created_at', { ascending: false }).limit(5),
+    supabase.from('profiles').select('id, full_name, email, role, created_at').order('created_at', { ascending: false }).limit(5),
   ])
 
   const totalCommissions = commissions
@@ -57,46 +49,22 @@ export default async function AdminDashboardPage() {
       role="admin"
       userName={profile.full_name}
       userEmail={profile.email}
+      userId={user.id}
     >
       <div className="space-y-8">
-        {/* Header */}
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Admin Overview</h1>
-          <p className="text-muted-foreground mt-1">
-            Platform-wide activity at a glance.
-          </p>
+          <p className="text-muted-foreground mt-1">Platform-wide activity at a glance.</p>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            title="Total Users"
-            value={usersCount ?? 0}
-            subtitle="All registered users"
-            icon={Users}
-          />
-          <StatCard
-            title="Listings"
-            value={listingsCount ?? 0}
-            subtitle="All properties"
-            icon={Building2}
-          />
-          <StatCard
-            title="Leads"
-            value={leadsCount ?? 0}
-            subtitle={`${newLeadsCount ?? 0} new`}
-            icon={ClipboardList}
-          />
-          <StatCard
-            title="Total Commissions"
-            value={formatCurrency(totalCommissions)}
-            subtitle="Paid out"
-            icon={DollarSign}
-          />
+          <StatCard title="Total Users"        value={usersCount ?? 0}              subtitle="All registered users" icon={Users}       />
+          <StatCard title="Listings"           value={listingsCount ?? 0}           subtitle="All properties"       icon={Building2}   />
+          <StatCard title="Leads"              value={leadsCount ?? 0}              subtitle={`${newLeadsCount ?? 0} new`} icon={ClipboardList} />
+          <StatCard title="Total Commissions"  value={formatCurrency(totalCommissions)} subtitle="Paid out"         icon={DollarSign}  />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Recent leads */}
           <div className="bg-background border rounded-xl">
             <div className="p-5 border-b flex items-center justify-between">
               <h2 className="font-semibold">Recent Leads</h2>
@@ -109,16 +77,10 @@ export default async function AdminDashboardPage() {
                 {recentLeads.map((lead: any) => (
                   <div key={lead.id} className="p-4 flex items-center justify-between gap-4">
                     <div className="min-w-0 space-y-0.5">
-                      <p className="text-sm font-medium truncate">
-                        {lead.profiles?.full_name ?? 'Unknown'}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {lead.profiles?.email}
-                      </p>
+                      <p className="text-sm font-medium truncate">{lead.profiles?.full_name ?? 'Unknown'}</p>
+                      <p className="text-xs text-muted-foreground truncate">{lead.profiles?.email}</p>
                     </div>
-                    <Badge variant={lead.status === 'new' ? 'default' : 'outline'}>
-                      {lead.status}
-                    </Badge>
+                    <Badge variant={lead.status === 'new' ? 'default' : 'outline'}>{lead.status}</Badge>
                   </div>
                 ))}
               </div>
@@ -129,7 +91,6 @@ export default async function AdminDashboardPage() {
             )}
           </div>
 
-          {/* Recent users */}
           <div className="bg-background border rounded-xl">
             <div className="p-5 border-b flex items-center justify-between">
               <h2 className="font-semibold">Recent Users</h2>
@@ -145,9 +106,7 @@ export default async function AdminDashboardPage() {
                       <p className="text-sm font-medium truncate">{u.full_name}</p>
                       <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                     </div>
-                    <Badge variant="outline" className="capitalize shrink-0">
-                      {u.role}
-                    </Badge>
+                    <Badge variant="outline" className="capitalize shrink-0">{u.role}</Badge>
                   </div>
                 ))}
               </div>
